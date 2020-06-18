@@ -1,5 +1,5 @@
 print("^0======================================================================^7")
-print("^3Copyright 2020 esx_brasseriejob ^5V1.0 ^3by ^1FproGeek^0")
+print("^3Copyright 2020 esx_brasseriejob ^5V1.1 ^3by ^1FproGeek^0")
 print("^5https://github.com/FproGeek/esx_brasseriejob^0"))
 print("^0======================================================================^7")
 
@@ -21,7 +21,9 @@ local LastZone                = nil
 local CurrentAction           = nil
 local CurrentActionMsg        = ''
 local CurrentActionData       = {}
-local Blips                   = {}
+local JobBlips                = {}
+
+local publicBlip              = false
 
 PlayerData = {}
 
@@ -47,32 +49,6 @@ Citizen.CreateThread(function()
   end
 end)
 
-local brasseurblips = { 
-   {title="Cultiver Houblon", colour=31, id=318, x=1886.309, y=4858.142, z=44.619}, 
-   {title="Traitement bière Blonde", colour=31, id=318, x=2466.022, y=4101.801, z=38.064}, 
-   {title="Traitement bière Brune", colour=31, id=318, x= 407.702, y= 6496.108, z= 27.874}, 
-   {title="Vente", colour=31, id=318, x=98.863, y =-1811.229, z=27.076}
-}
-
- Citizen.CreateThread(function() 
-    while not done do
-        Citizen.Wait(10)
-    end
-    if PlayerData.job.name == 'brasseur' then 
-        for _, info in pairs(brasseurblips) do 
-        info.blip = AddBlipForCoord(info.x, info.y, info.z)
-      SetBlipSprite(info.blip, info.id)
-      SetBlipDisplay(info.blip, 4)
-      SetBlipScale(info.blip, 1.0)
-      SetBlipColour(info.blip, info.colour)
-      SetBlipAsShortRange(info.blip, false)
-      BeginTextCommandSetBlipName("STRING")
-      AddTextComponentString(info.title)
-      EndTextCommandSetBlipName(info.blip)
-      done = true
-    end
-end
-end)
 
 function IsJobTrue()
     if PlayerData ~= nil then
@@ -97,11 +73,14 @@ end
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
   PlayerData = xPlayer
+    blips()
 end)
 
 RegisterNetEvent('esx:setJob')
 AddEventHandler('esx:setJob', function(job)
   PlayerData.job = job
+    	deleteBlips()
+	blips()
 end)
 
 
@@ -447,59 +426,67 @@ end
 
 function OpenGetStocksMenu()
 
-  ESX.TriggerServerCallback('esx_brasseriejob:getStockItems', function(items)
-
-    print(json.encode(items))
-
-    local elements = {}
-
-    for i=1, #items, 1 do
-      table.insert(elements, {label = 'x' .. items[i].count .. ' ' .. items[i].label, value = items[i].name})
-    end
-
-    ESX.UI.Menu.Open(
-      'default', GetCurrentResourceName(), 'stocks_menu',
-      {
-        title    = _U('brasseur_stock'),
-        elements = elements
-      },
-      function(data, menu)
-
-        local itemName = data.current.value
-
-        ESX.UI.Menu.Open(
-          'dialog', GetCurrentResourceName(), 'stocks_menu_get_item_count',
-          {
-            title = _U('quantity')
-          },
-          function(data2, menu2)
-
-            local count = tonumber(data2.value)
-
-            if count == nil then
-              ESX.ShowNotification(_U('invalid_quantity'))
-            else
-              menu2.close()
-              menu.close()
-              OpenGetStocksMenu()
-
-              TriggerServerEvent('esx_brasseriejob:getStockItem', itemName, count)
-            end
-
-          end,
-          function(data2, menu2)
-            menu2.close()
-          end
-        )
-
-      end,
-      function(data, menu)
-        menu.close()
-      end
-    )
-
-  end)
-
+	ESX.TriggerServerCallback('esx_brasseriejob:getStockItems', function(items)
+  
+	  print(json.encode(items))
+  
+	  local elements = {}
+  
+	  for i=1, #items, 1 do
+  
+		local item = items[i]
+  
+		if item.count > 0 then
+		  table.insert(elements, {label = item.label .. ' x' .. item.count, type = 'item_standard', value = item.name})
+		end
+  
+	  end
+  
+	  ESX.UI.Menu.Open(
+		'default', GetCurrentResourceName(), 'stocks_menu',
+		{
+			css      = 'menumetier',
+		  title    = 'Brasseur Stock',
+		  elements = elements
+		},
+		function(data, menu)
+  
+		  local itemName = data.current.value
+  
+		  ESX.UI.Menu.Open(
+			'dialog', GetCurrentResourceName(), 'stocks_menu_get_item_count',
+			{
+				css      = 'menumetier',
+			  title = _U('quantity')
+			},
+			function(data2, menu2)
+  
+			  local count = tonumber(data2.value)
+  
+			  if count == nil then
+				ESX.ShowNotification(_U('invalid_quantity'))
+			  else
+				menu2.close()
+				menu.close()
+				OpenGetStocksMenu()
+  
+				TriggerServerEvent('esx_brasseriejob:getStockItem', itemName, count)
+			  end
+  
+			end,
+			function(data2, menu2)
+			  menu2.close()
+			end
+		  )
+  
+		end,
+		function(data, menu)
+		  menu.close()
+		end
+	  )
+  
+	end)
+  
 end
 
 function OpenPutStocksMenu()
@@ -726,24 +713,55 @@ AddEventHandler('esx_phone:loaded', function(phoneNumber, contacts)
   TriggerEvent('esx_phone:addSpecialContact', specialContact.name, specialContact.number, specialContact.base64Icon)
 end)
 
--- Create blips
-Citizen.CreateThread(function()
+function deleteBlips()
+	if JobBlips[1] ~= nil then
+		for i=1, #JobBlips, 1 do
+		RemoveBlip(JobBlips[i])
+		JobBlips[i] = nil
+		end
+	end
+end
 
-    local blipMarker = Config.Blips.Blip
-    local blipCoord = AddBlipForCoord(blipMarker.Pos.x, blipMarker.Pos.y, blipMarker.Pos.z)
+-- Create Blips
+function blips()
+	if publicBlip == false then
+		local blip = AddBlipForCoord(Config.Blips.Blip.Pos.x, Config.Blips.Blip.Pos.y, Config.Blips.Blip.Pos.z)
+		local blipMarker = Config.Blips.Blip
 
-    SetBlipSprite (blipCoord, blipMarker.Sprite)
-    SetBlipDisplay(blipCoord, blipMarker.Display)
-    SetBlipScale  (blipCoord, blipMarker.Scale)
-    SetBlipColour (blipCoord, blipMarker.Colour)
-    SetBlipAsShortRange(blipCoord, true)
+		SetBlipSprite (blip, blipMarker.Sprite)
+		SetBlipDisplay(blip, blipMarker.Display)
+		SetBlipScale  (blip, blipMarker.Scale)
+		SetBlipColour (blip, blipMarker.Colour)
+		SetBlipAsShortRange(blip, true)
 
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(_U('map_blip'))
-    EndTextCommandSetBlipName(blipCoord)
+		BeginTextCommandSetBlipName('STRING')
+		AddTextComponentString(_U('map_blip'))
+		EndTextCommandSetBlipName(blip)
+		publicBlip = true
+	end
+	
+    if PlayerData.job ~= nil and PlayerData.job.name == 'brasseur' then
+
+		    for k,v in pairs(Config.Zones)do
+      if v.Etat == 1 then
+        local blip2 = AddBlipForCoord(v.Pos.x, v.Pos.y, v.Pos.z)
+        local blipMarker2 = Config.Blips.Blip
 
 
-end)
+        SetBlipSprite (blip2, blipMarker2.Sprite)
+        SetBlipDisplay(blip2, blipMarker2.Display)
+        SetBlipScale  (blip2, blipMarker2.Scale)
+        SetBlipColour (blip2, blipMarker2.Colour)
+        SetBlipAsShortRange(blip2, true)
+
+        BeginTextCommandSetBlipName('STRING')
+        AddTextComponentString(v.Name)
+        EndTextCommandSetBlipName(blip2)
+        table.insert(JobBlips, blip2)
+      end
+    end
+  end
+end
 
 -- Display markers
 Citizen.CreateThread(function()
