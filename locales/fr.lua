@@ -67,4 +67,8 @@ Locales['fr'] = {
   ['sale_in_prog'] = 'revente en cours...',
   ['comp_earned'] = 'votre société a gagné ~g~$',
   ['comp_earned_private'] = 'vous avez gagné ~g~$',
+
+  ['you_added'] ='Tu a ajouter ~b~x',
+  ['you_removed'] ='Tu a retirer ~b~x',
+  ['invalid_quantity'] ='Quantité invalide !',
 }
