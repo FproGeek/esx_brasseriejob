@@ -1,4 +1,4 @@
-# esx_brasseriejob 1.0.0
+# esx_brasseriejob 1.1.0
 Je vous partage ce script que j'ai fait pour le serveur RavenRP,
 Il vous permet d'ajouter une brasserie avec un système de run (recolte houblon, traitement en bière brune, traitement en bière blonde et revente)
 Il y'a également un vestiaire, garage, menu patron et coffre.
