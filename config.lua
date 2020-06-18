@@ -32,6 +32,7 @@ Config.Zones = {
         Size  = { x = 1.5, y = 1.5, z = 1.5 },
         Color = { r = 255, g = 255, b = 255 },
         Type  = 25,
+        Etat  = 0,
     },
 
     Vaults = {
@@ -39,6 +40,7 @@ Config.Zones = {
         Size    = { x = 1.5, y = 1.5, z = 1.5 },
         Color   = { r = 255, g = 255, b = 255 },
         Type    = 25,
+        Etat  = 0,
     },
 
 
@@ -48,6 +50,7 @@ Config.Zones = {
         Size        = { x = 1.5, y = 1.5, z = 1.5 },
         Color       = { r = 255, g = 255, b = 255 },
         Type        = 25,
+        Etat  = 0,
         Heading     = 58.0
     },
 
@@ -55,21 +58,25 @@ Config.Zones = {
         Pos     = { x = 1972.991, y =4641.703, z = 39.984 },
         Size    = { x = 1.5, y = 1.5, z = 1.5 },
         Color   = { r = 255, g = 255, b = 255 },
-        Type    = 25
+        Type    = 25,
+        Etat  = 0,
     },
 
     BossActions = {
         Pos     = { x = 1966.643, y = 4634.773, z = 40.141 },
         Size    = { x = 1.5, y = 1.5, z = 1.5 },
         Color   = { r = 255, g = 255, b = 255 },
-        Type    = 25
+        Type    = 25,
+        Etat  = 0,
     },
 
     HoublonFarm = {
         Pos    = { x = 1886.309, y = 4858.142, z = 44.619 },
         Size   = { x = 2.5, y = 2.5, z = 2.5 },
         Color  = {r = 255, g = 255, b = 255},
-        Type   = 25
+        Name  = "Cultiver du houblon",
+        Type   = 25,
+        Etat  = 1,
     },
 
 
@@ -77,21 +84,27 @@ Config.Zones = {
         Pos   = { x = 407.702, y = 6496.108, z = 26.874 },
         Size  = { x = 2.5, y = 2.5, z = 2.5} ,
         Color = {r = 255, g = 255, b = 255},
-        Type  = 25
+        Name  = "Traitement brune",
+        Type  = 25,
+        Etat  = 1,
     },
 
     TraitementBlonde = {
         Pos   = { x= 2466.022, y=  4101.801, z= 37.064 },
         Size  = { x = 2.5, y = 2.5, z = 2.5} ,
         Color = {r = 255, g = 255, b = 255},
-        Type  = 25
+        Name  = "Traitement blonde",
+        Type  = 25,
+        Etat  = 1,
     },
     
     SellFarm = {
-        Pos   = { x = 98.863, y = -1811.229, z =26.076 },
+        Pos   = { x = 89.437, y = -1744.525, z = 29.150 },
         Size  = { x = 2.5, y = 2.5, z = 2.5 },
         Color = {r = 255, g = 255, b = 255},
-        Type  = 25
+        Name  = "Vendre",
+        Type  = 25,
+        Etat  = 1,
     },
 }
 
