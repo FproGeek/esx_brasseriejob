@@ -1,6 +1,6 @@
 print("^0======================================================================^7")
-print("^3Copyright 2020 esx_brasseriejob ^5V1.0 ^3by ^1FproGeek^0")
-print("^5https://github.com/FproGeek/esx_brasseriejob^0")
+print("^3Copyright 2020 esx_brasseriejob ^5V1.1 ^3by ^1FproGeek^0")
+print("^5https://github.com/FproGeek/esx_brasseriejob^0"))
 print("^0======================================================================^7")
 
 ESX = nil
@@ -268,7 +268,7 @@ AddEventHandler('esx_brasseriejob:getStockItem', function(itemName, count)
       inventory.removeItem(itemName, count)
       xPlayer.addInventoryItem(itemName, count)
     else
-      TriggerClientEvent('esx:showNotification', xPlayer.source, _U('quantity_invalid'))
+      TriggerClientEvent('esx:showNotification', xPlayer.source, _U('invalid_quantity'))
     end
 
     TriggerClientEvent('esx:showNotification', xPlayer.source, _U('you_removed') .. count .. ' ' .. item.label)
